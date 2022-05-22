@@ -1,4 +1,4 @@
-# specimen_creation_cif_gui
+#  atomic_specimen_creation
 This repository contains 2 main contributions:
  ### Create projected unit cells (StatSTEM)
  - Interface for cif-files
