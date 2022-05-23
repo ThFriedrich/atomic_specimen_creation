@@ -6,7 +6,7 @@
 % this file. If not, please visit: 
 % https://www.gnu.org/licenses/gpl-3.0.en.html
 
-function [atoms_collect, R, crystal_par] = tfm_align_duplicate_cut(cif_path, T_hkl, na, nb, nc, lx, ly, lz, b_plot, b_hkl, h)
+function [atoms, R, crystal_par] = tfm_align_duplicate_cut(cif_path, T_hkl, rot_z, lx, ly, lz, b_plot, b_hkl, h)
     % path = path to cif file or crystal parameters loaded already
     % T_hkl = zone axis to align to cartesian z
     % na, nb, nc = number of unit cell replications along lattice vectors
@@ -42,27 +42,21 @@ function [atoms_collect, R, crystal_par] = tfm_align_duplicate_cut(cif_path, T_h
     
     % Align vector T_uvw to cartesian Z-Axis
     [atoms, A, B, C, R] = tfm_align_z(atoms, crystal_par.a, crystal_par.b, crystal_par.c,...
-        crystal_par.alpha, crystal_par.beta, crystal_par.gamma, T_uvw);
-    atoms_collect = atoms;
+        crystal_par.alpha, crystal_par.beta, crystal_par.gamma, T_uvw, rot_z);
 
     % Duplicate along lattice vectors
-    atoms_collect = tfm_loop_dim(atoms_collect, A, na);
-    atoms_collect = tfm_loop_dim(atoms_collect, B, nb);
-    atoms_collect = tfm_loop_dim(atoms_collect, C, nc);
-    
-    % Shift centre to zero , cut to box
-    cm = mean(atoms_collect(:,2:4));
-    atoms_collect(:,2:4) = atoms_collect(:,2:4) - cm;
-    b_x = atoms_collect(:,2)<(-lx/2) | atoms_collect(:,2)>(lx/2); 
-    b_y = atoms_collect(:,3)<(-ly/2) | atoms_collect(:,3)>(ly/2); 
-    b_z = atoms_collect(:,4)<(-lz/2) | atoms_collect(:,4)>(lz/2); 
-    atoms_collect(b_x|b_y|b_z,:) = [];
-    at_rng = max(atoms_collect(:,2:4))-min(atoms_collect(:,2:4));
-    [atoms_collect,sft] = ilm_spec_recenter(atoms_collect,at_rng(1),at_rng(2),at_rng(3));
+    if all([lx,ly,lz]>0)
+        [atoms, cm] = tfm_loop_dim(atoms, [A' B' C'], lx, ly, lz, false);
+    else
+        cm = [0 0 0];
+    end
+
+    at_rng = max(atoms(:,2:4))-min(atoms(:,2:4));
+    [atoms,sft] = ilm_spec_recenter(atoms,at_rng(1),at_rng(2),at_rng(3));
     
     if b_plot
-      ref_xyz = max(-cm+sft,min(atoms_collect(:,2:4)));
+      ref_xyz = min(max(-cm+sft,min(atoms(:,2:4))),max(atoms(:,2:4)));
       ti = join([regexprep(crystal_par.formula,'\d+','_\{$0\}'), ' - [', join(string(T_hkl),' ') ']']);
-      tfm_plot_crystal(atoms_collect, 'g', [R ref_xyz'], 'title', ti,'h', h)
+      tfm_plot_crystal(atoms, 'g', [R ref_xyz'], 'title', ti,'h', h)
     end
 end

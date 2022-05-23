@@ -61,11 +61,11 @@ function align_vec(~,~,hpf)
     global crystal_par R
     T_hkl = str2num(hpf.par.edit_vec.String); %#ok<ST2NM>
 
-    [atoms, R, crystal_par] = tfm_align_duplicate_cut(crystal_par, T_hkl, 0, 0, 0, 1000, 1000, 1000, false, hpf.par.tb2.Value);
+    [atoms, R, crystal_par] = tfm_align_duplicate_cut(crystal_par, T_hkl, 0, 0, 0, false, hpf.par.tb2.Value);
     
     %Plot projection
     cla(hpf.image.ax2)
-    tfm_plot_crystal(atoms, 'g', R, 'h', hpf.image.ax2, '2d');
+    tfm_plot_crystal(atoms, 'g', [R [0 0 0]'], 'h', hpf.image.ax2,'2d');
     fcn_set_proj_coordinates(hpf, atoms)
 end
 
@@ -74,25 +74,18 @@ function hpf = load_cif(~, ~, hpf)
     [file,cif_path] = uigetfile('*.cif');
     [~,n,~] = fileparts(file);
     if ~isempty(file)
-        crystal_par.name = n;
         cla(hpf.image.ax1)
-        [crystal_par.asym_uc, crystal_par.a, crystal_par.b, crystal_par.c,... 
-         crystal_par.alpha, crystal_par.beta, crystal_par.gamma, ...
-         crystal_par.sgn, crystal_par.hmg, crystal_par.transformations, ...
-         crystal_par.formula] = tfm_import_cif([cif_path file]);
-        if isempty(crystal_par.transformations)
-            atoms = ilm_crystal_build_base(crystal_par);
-        else
-            atoms = tfm_crystal_build_base(crystal_par.asym_uc, crystal_par.transformations);
-        end
+        crystal_par = tfm_get_uc_from_cif([cif_path filesep file]);
+        crystal_par.name = n;
         g = tfm_direct_structure_matrix(crystal_par.a, crystal_par.b, crystal_par.c,... 
            crystal_par.alpha, crystal_par.beta, crystal_par.gamma);
-       atoms(:,2:4) = atoms(:,2:4)*g; 
-       tfm_plot_crystal(atoms, 'g', [g [0 0 0]'],'h', hpf.image.ax1)
+       crystal_par.atoms(:,2:4) = crystal_par.atoms(:,2:4)*g; 
+       
+       tfm_plot_crystal(crystal_par.atoms, 'g', [g [0 0 0]'],'h', hpf.image.ax1)
         
-       hpf.inf.tblA.RowName = fieldnames(rmfield(crystal_par,{'transformations','asym_uc'}));
-        hpf.inf.tblA.Data = struct2cell(rmfield(crystal_par,{'transformations','asym_uc'}));
-        align_vec([],[],hpf)
+       hpf.inf.tblA.RowName = fieldnames(rmfield(crystal_par,{'atoms','transformations','asym_uc'}));
+       hpf.inf.tblA.Data = struct2cell(rmfield(crystal_par,{'atoms','transformations','asym_uc'}));
+       align_vec([],[],hpf)
     end
 %    hpf.inf.tblA.Position(0) = 0;
 end

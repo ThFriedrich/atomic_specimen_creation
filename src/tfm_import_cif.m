@@ -61,7 +61,7 @@ function dat = fcn_read_loops(str, loop_label, parse_fcn)
         b_at = fcn_find_prm(va,loop_label{1});
         if ~isempty(b_at)
            for c = 1:numel(loop_label)
-                col(c) = fcn_find_prm(va,loop_label{c});
+                col(c) = fcn_find_prm(va,loop_label{c},true);
            end
            ir = 1;
            while true && loop_start + iv +ir-1 <= numel(str)
@@ -81,6 +81,9 @@ function dat = fcn_read_loops(str, loop_label, parse_fcn)
                ir = ir + 1;
            end
         end
+    end
+    if ~exist('dat','var')
+        dat = [];
     end
 end
 

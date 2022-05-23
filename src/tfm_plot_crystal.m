@@ -46,22 +46,20 @@ function tfm_plot_crystal(atoms, varargin)
     if ~isempty(b_2d) || length(atoms) > 64
         rng_x = max(max(xyz,[],1)-min(xyz,[],1))+2*max(R);
         markerWidth = get_marker_size(R, rng_x, h)/2;
-        if b_2d
-            plt_fcn = @scatter2flt;
-        else
-            plt_fcn = @scatter3flt;
-        end
+        plt_fcn = @scatter3flt;
     else
         plt_fcn = @scatter3sph;
         markerWidth = R/2;
     end
     
-    hold on;
+    hold(h, 'on' );
     for ix = 1:numel(at_types)
        b_at = atoms(:,1) == at_types(ix);
-       lg(ix) = plt_fcn(h, xyz(b_at,:), markerWidth(ix), C(ix,:)./255);    
+       lg(ix) = plt_fcn(h, xyz(b_at,:), markerWidth(ix), C(ix,:)./255);   
     end
-    hold off;
+    leg = legend(h, lg, Z_str,'FontSize',24);
+    leg.AutoUpdate = 'off';
+    hold(h, 'off' );
     
     if idx_g
         gg = varargin{idx_g+1};
@@ -85,7 +83,7 @@ function tfm_plot_crystal(atoms, varargin)
     else
         axis(h,'off');    
     end
-    leg = legend(h, lg, Z_str,'FontSize',24);
+    
     if idx_title
         str_title = varargin{idx_title+1};
         if contains(str_title,"_{")
@@ -93,17 +91,12 @@ function tfm_plot_crystal(atoms, varargin)
         end   
         annotation('textbox', [0, 0.9, 0.2, 0.1], 'string', str_title,'Interpreter','LaTex','FontSize',24,'LineStyle','none')
     end
-    leg.AutoUpdate = 'off';
+    
     drawnow()
 end
 
 function h_sc = scatter3flt(h, xyz, markerWidth, C)
     h_sc = scatter3(h, xyz(:,1),xyz(:,2),xyz(:,3), markerWidth, C ,'filled','MarkerEdgeColor','k','LineWidth',1);    
-    set(h_sc, 'SizeData', markerWidth.^2)
-end
-
-function h_sc = scatter2flt(h, xyz, markerWidth, C)
-    h_sc = scatter(h, xyz(:,1),xyz(:,2), markerWidth, C ,'filled','MarkerEdgeColor','k','LineWidth',1);    
     set(h_sc, 'SizeData', markerWidth.^2)
 end
 

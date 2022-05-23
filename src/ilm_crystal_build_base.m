@@ -52,6 +52,5 @@ function[base]=ilm_crystal_build_base(crystal_par)
         end
     end
     base = base(1:ic, :);
-    figure(4); clf;
-    tfm_plot_crystal(base,'h',gca); view([0 0 1]);
+%     tfm_plot_crystal(base,'h',gca); view([0 0 1]);
 end

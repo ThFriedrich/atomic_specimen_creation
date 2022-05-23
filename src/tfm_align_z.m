@@ -6,15 +6,20 @@
 % this file. If not, please visit: 
 % https://www.gnu.org/licenses/gpl-3.0.en.html
 
-function [txyz_c, a_r, b_r, c_r, R] = tfm_align_z(atoms, a, b, c, alpha, beta, gamma, T)
+function [txyz_c, a_r, b_r, c_r, R] = tfm_align_z(atoms, a, b, c, alpha, beta, gamma, T, rot_dz)
     % Aligns the z-axis of the crystal with the vector T.
     % atoms = [atom_type, x, y, z]
     % a, b, c, alpha, beta, gamma = cell parameters
     % T = [x, y, z]
+    % rot_dz = rotation around z (deg)
     % Returns:
     % txyz_c = [atom_type, x, y, z], aligned crystal
     % a_r, b_r, c_r = cartesian cell vectors of the aligned crystal
     % R = rotation matrix
+    
+    if nargin < 9
+        rot_dz = 0;
+    end
     
     xyz = atoms(:,2:4);
     at_Z = atoms(:,1);
@@ -40,14 +45,12 @@ function [txyz_c, a_r, b_r, c_r, R] = tfm_align_z(atoms, a, b, c, alpha, beta, g
     Tyz = fcn_proj_YZ(T_rot);
     rx = dr * fcn_vec_angle(Z,Tyz);
     Rot_x = rotx(rx);
-    T_rot = T_rot * Rot_x;
 
     A_rot = A * Rot_y * Rot_x;
     dr = fcn_rot_dir('z',A_rot);
     Axy = fcn_proj_XY(A_rot);
-    rz = dr * fcn_vec_angle(X,Axy);
+    rz = dr * fcn_vec_angle(X,Axy) + rot_dz;
     Rot_z = rotz(rz);
-    T_rot = T_rot * Rot_z;
 
     R = g * Rot_y * Rot_x * Rot_z;
     xyz_R = xyz * R;
