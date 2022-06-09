@@ -51,12 +51,15 @@ function [atoms, R, crystal_par] = tfm_align_duplicate_cut(cif_path, T_hkl, rot_
         cm = [0 0 0];
     end
 
-    at_rng = max(atoms(:,2:4))-min(atoms(:,2:4));
-    [atoms,sft] = ilm_spec_recenter(atoms,at_rng(1),at_rng(2),at_rng(3));
-    
-    if b_plot
-      ref_xyz = min(max(-cm+sft,min(atoms(:,2:4))),max(atoms(:,2:4)));
-      ti = join([regexprep(crystal_par.formula,'\d+','_\{$0\}'), ' - [', join(string(T_hkl),' ') ']']);
-      tfm_plot_crystal(atoms, 'g', [R ref_xyz'], 'title', ti,'h', h)
+    if size(atoms,1) > 1
+        at_rng = max(atoms(:,2:4),[],1)-min(atoms(:,2:4),[],1);
+        [atoms,sft] = ilm_spec_recenter(atoms,at_rng(1),at_rng(2),at_rng(3));
+        if b_plot
+          ref_xyz = min(max(-cm+sft,min(atoms(:,2:4))),max(atoms(:,2:4)));
+          ti = join([regexprep(crystal_par.formula,'\d+','_\{$0\}'), ' - [', join(string(T_hkl),' ') ']']);
+          tfm_plot_crystal(atoms, 'g', [R ref_xyz'], 'title', ti,'h', h)
+        end
+    else
+        atoms = [];
     end
 end
