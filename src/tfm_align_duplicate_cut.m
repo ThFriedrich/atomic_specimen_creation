@@ -9,7 +9,7 @@
 function [atoms, R, crystal_par] = tfm_align_duplicate_cut(cif_path, T_hkl, rot_z, lx, ly, lz, b_plot, b_hkl, h)
     % path = path to cif file or crystal parameters loaded already
     % T_hkl = zone axis to align to cartesian z
-    % na, nb, nc = number of unit cell replications along lattice vectors
+    % rot_z = rotation angle around cartesian z axis in degrees
     % lx, ly, lz = box size
     % b_plot = boolean, plot the atoms?
     % b_hkl = boolean, zone axis given in hkl, otherwise uvw?
@@ -55,6 +55,9 @@ function [atoms, R, crystal_par] = tfm_align_duplicate_cut(cif_path, T_hkl, rot_
         at_rng = max(atoms(:,2:4),[],1)-min(atoms(:,2:4),[],1);
         [atoms,sft] = ilm_spec_recenter(atoms,at_rng(1),at_rng(2),at_rng(3));
         if b_plot
+            if nargin < 9
+                h = gca();
+            end
           ref_xyz = min(max(-cm+sft,min(atoms(:,2:4))),max(atoms(:,2:4)));
           ti = join([regexprep(crystal_par.formula,'\d+','_\{$0\}'), ' - [', join(string(T_hkl),' ') ']']);
           tfm_plot_crystal(atoms, 'g', [R ref_xyz'], 'title', ti,'h', h)
