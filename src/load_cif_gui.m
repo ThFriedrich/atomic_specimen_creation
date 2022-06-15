@@ -118,8 +118,9 @@ function save_txt(~,~,hpf)
     % view([0 0 1]);
     
     xyz_frac = round(xyz/[a' b' c'],4);
-    formatSpecXY = '%s	%0.3f	%0.3f';
-    formatSpecZ = '%s	%0.3f';
+    xyz_frac = xyz_frac - floor(xyz_frac);
+    formatSpecXY = '%s	%0.4f	%0.4f';
+    formatSpecZ = '%s	%0.4f';
     
     txt = {
         ['Database file for StatSTEM'];
