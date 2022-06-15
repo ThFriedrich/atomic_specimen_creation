@@ -60,8 +60,8 @@ set(hpf.par.tb2,'Callback',{@align_vec,hpf})
 function align_vec(~,~,hpf)
     global crystal_par R
     T_hkl = str2num(hpf.par.edit_vec.String); %#ok<ST2NM>
-
-    [atoms, R, crystal_par] = tfm_align_duplicate_cut(crystal_par, T_hkl, 0, 0, 0, false, hpf.par.tb2.Value);
+                                         
+    [atoms, R, crystal_par] = tfm_align_duplicate_cut(crystal_par, T_hkl, 0, 0, 0, 0, false, hpf.par.tb2.Value);
     
     %Plot projection
     cla(hpf.image.ax2)
