@@ -27,6 +27,9 @@ function [atoms, a, b, c, alpha, beta, gamma, sg, hmg, transformations, formula]
     end
     [~, hmg] = fcn_find_prm(str,'_symmetry_space_group_name_h-m', true);
     transformations = fcn_read_loops(str,{'_symmetry_equiv_pos_as_xyz'},@fcn_parse_sym_ops);
+    if isempty(transformations)
+    	transformations = fcn_read_loops(str,{'_space_group_symop_operation_xyz'},@fcn_parse_sym_ops);
+    end
     atoms = fcn_read_loops(str, {'_atom_site_type_symbol','_atom_site_fract_x','_atom_site_fract_y','_atom_site_fract_z'},@fcn_parse_atoms);
 end
 
@@ -66,7 +69,7 @@ function dat = fcn_read_loops(str, loop_label, parse_fcn)
            ir = 1;
            while true && loop_start + iv +ir-1 <= numel(str)
                tline = strtrim(str{loop_start + iv +ir-1});
-               if fcn_startsWith(tline,'_') || fcn_startsWith(tline,'loop_') || isempty(strtrim(tline))
+               if fcn_startsWith(tline,'_') || fcn_startsWith(tline,'#') || fcn_startsWith(tline,'loop_') || isempty(strtrim(tline))
                    break
                end
                tline = replace(tline,'"',"'");
