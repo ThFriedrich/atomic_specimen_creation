@@ -8,6 +8,10 @@
 
 % Create a new figure with given size and minimum size
 close all;
+global mat_ver
+mat_ver = version('-release');
+mat_ver = str2double(mat_ver(1:4));
+
 screensize = get(0, 'Screensize');
 s = round(screensize(3:4)*0.8);
 hpf.fig = figure('units','pixels','outerposition',[screensize(3)/2-s(1)/2 screensize(4)/2-s(2)/2 s(1) s(2)],'Name','Cif Import','NumberTitle','off','Visible','on','Resize','on','MenuBar','none','ToolBar','figure');
@@ -97,7 +101,7 @@ function fcn_set_proj_coordinates(hpf, atoms)
 end
 
 function save_txt(~,~,hpf)
-    global crystal_par
+    global crystal_par mat_ver
     proj_coordinates = hpf.inf.tblP.Data;
     elm = tfm_Z_str(proj_coordinates(:,1));
     xyz = proj_coordinates(:,2:4);
@@ -145,7 +149,12 @@ function save_txt(~,~,hpf)
     default_name = [replace([crystal_par.name '_' hpf.par.edit_vec.String]," ","") '.txt'];
     [file,path] = uiputfile(default_name);
     if path ~= 0
-        writecell(txt,[path filesep file],'Delimiter','tab','QuoteStrings',0)
+        if mat_ver > 2021
+            qute_opt = "none";
+        else
+            qute_opt = 0;
+        end
+        writecell(txt,[path filesep file],'Delimiter','tab','QuoteStrings',qute_opt)
     end
 end
 

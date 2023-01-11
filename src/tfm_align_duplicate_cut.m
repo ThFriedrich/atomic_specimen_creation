@@ -59,7 +59,11 @@ function [atoms, R, crystal_par] = tfm_align_duplicate_cut(cif_path, T_hkl, rot_
                 h = gca();
             end
           ref_xyz = min(max(-cm+sft,min(atoms(:,2:4))),max(atoms(:,2:4)));
-          ti = join([regexprep(crystal_par.formula,'\d+','_\{$0\}'), ' - [', join(string(T_hkl),' ') ']']);
+          if ~isempty(crystal_par.formula)
+            ti = join([regexprep(crystal_par.formula,'\d+','_\{$0\}'), ' - [', join(string(T_hkl),' ') ']']);
+          else
+              ti = "";
+          end
           tfm_plot_crystal(atoms, 'g', [R ref_xyz'], 'title', ti,'h', h)
         end
     else
