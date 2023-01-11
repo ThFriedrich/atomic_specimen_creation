@@ -67,7 +67,7 @@ function tfm_plot_crystal(atoms, varargin)
         if size(gg,2) == 4 
             tr = gg(:,end)';
         else
-            tr = xyz(1,:);
+            tr = [0 0 0];
         end
         fcn_plot_frame(g,h,tr);
         fcn_plot_tripod(tr-1,h);
@@ -101,14 +101,14 @@ function h_sc = scatter3flt(h, xyz, markerWidth, C)
 end
 
 function fcn_plot_frame(g, h, tr)
-    frame_1 =[[0 1 0];[0 1 1];[0 0 1];[0 0 0]];
-    frame_2 = circshift(frame_1,-1,2)*g+tr;
-    frame_3 = circshift(frame_1,-2,2)*g+tr; 
-    frame_4 =[[0 1 1];[0 0 1];[1 0 1];[1 1 1]];          
-    frame_5 = circshift(frame_4,-1,2)*g+tr;
-    frame_6 = circshift(frame_4,-2,2)*g+tr; 
-    frame_1 = frame_1 * g+tr;   
-    frame_4 = frame_4 * g+tr; 
+    basis = [[0 1 0];[0 1 1];[0 0 1];[0 0 0]];
+    basis2 = [[0 1 1];[0 0 1];[1 0 1];[1 1 1]];
+    frame_1 = basis*g+tr;
+    frame_2 = circshift(basis,-1,2)*g+tr;
+    frame_3 = circshift(basis,-2,2)*g+tr; 
+    frame_4 = basis2*g+tr;          
+    frame_5 = circshift(basis2,-1,2)*g+tr;
+    frame_6 = circshift(basis2,-2,2)*g+tr; 
 
     hold(h, 'on');
     plot3(h,frame_1(:,1),frame_1(:,2),frame_1(:,3),'k')

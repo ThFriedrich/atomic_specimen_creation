@@ -24,8 +24,7 @@ function [atoms, cm_o] = tfm_loop_dim(atoms, V, lx, ly, lz, b_test)
                 break;
             end 
             if b_test
-                tfm_plot_crystal([atoms(:,1) atoms(:,2:4)]); axis on; hold on;
-                plotcube([lx, ly, lz],cm-[lx, ly, lz]./2,0.5,'y'); hold off;
+                tfm_plot_crystal(atoms); axis on; hold on;
             end
         end
     end
